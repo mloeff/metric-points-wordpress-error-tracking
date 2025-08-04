@@ -1,0 +1,145 @@
+# Copyright (C) 2025 Metric Points Error Tracking
+# This file is distributed under the GPL v2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Metric Points Error Tracking 1.0.0\n"
+"Report-Msgid-Bugs-To: https://github.com/mloeff/metric-points-wordpress-error-tracking/issues\n"
+"POT-Creation-Date: 2025-08-03 12:00+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2025-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+
+#: metric-points-error-tracking.php:75
+msgid "Metric Points Error Tracking"
+msgstr ""
+
+#: metric-points-error-tracking.php:76
+msgid "Error Tracking"
+msgstr ""
+
+#: metric-points-error-tracking.php:122
+msgid "Settings saved successfully!"
+msgstr ""
+
+#: metric-points-error-tracking.php:133
+msgid "Enable Error Tracking"
+msgstr ""
+
+#: metric-points-error-tracking.php:137
+msgid "Enable or disable error tracking on your site."
+msgstr ""
+
+#: metric-points-error-tracking.php:143
+msgid "API Key"
+msgstr ""
+
+#: metric-points-error-tracking.php:147
+msgid "Your Metric Points API key for authentication."
+msgstr ""
+
+#: metric-points-error-tracking.php:153
+msgid "Endpoint URL"
+msgstr ""
+
+#: metric-points-error-tracking.php:157
+msgid "The endpoint URL for your Metric Points error tracking service."
+msgstr ""
+
+#: metric-points-error-tracking.php:163
+msgid "Sample Rate (%)"
+msgstr ""
+
+#: metric-points-error-tracking.php:167
+msgid "Percentage of errors to track (0-100). Use lower values for high-traffic sites."
+msgstr ""
+
+#: metric-points-error-tracking.php:173
+msgid "Debug Mode"
+msgstr ""
+
+#: metric-points-error-tracking.php:177
+msgid "Enable debug mode to log additional information to browser console."
+msgstr ""
+
+#: metric-points-error-tracking.php:183
+msgid "Ignore Error Patterns"
+msgstr ""
+
+#: metric-points-error-tracking.php:187
+msgid "One error pattern per line. Supports regex patterns. Errors matching these patterns will be ignored."
+msgstr ""
+
+#: metric-points-error-tracking.php:192
+msgid "Connection Status"
+msgstr ""
+
+#: metric-points-error-tracking.php:194
+msgid "Save settings to test connection..."
+msgstr ""
+
+#: metric-points-error-tracking.php:197
+msgid "Test Connection"
+msgstr ""
+
+#: metric-points-error-tracking.php:204
+msgid "Integration Information"
+msgstr ""
+
+#: metric-points-error-tracking.php:205
+msgid "This plugin automatically adds the Metric Points error tracking script to your website. The script will:"
+msgstr ""
+
+#: metric-points-error-tracking.php:207
+msgid "Capture JavaScript errors and exceptions"
+msgstr ""
+
+#: metric-points-error-tracking.php:208
+msgid "Track unhandled promise rejections"
+msgstr ""
+
+#: metric-points-error-tracking.php:209
+msgid "Collect browser and user agent information"
+msgstr ""
+
+#: metric-points-error-tracking.php:210
+msgid "Send error data to your Metric Points service"
+msgstr ""
+
+#: metric-points-error-tracking.php:213
+msgid "Plugin Version"
+msgstr ""
+
+#: metric-points-error-tracking.php:214
+msgid "Version: %s"
+msgstr ""
+
+#: metric-points-error-tracking.php:243
+msgid "Testing..."
+msgstr ""
+
+#: metric-points-error-tracking.php:244
+msgid "Test Connection"
+msgstr ""
+
+#: metric-points-error-tracking.php:415
+msgid "You do not have sufficient permissions to access this page."
+msgstr ""
+
+#: metric-points-error-tracking.php:422
+msgid "API Key and Endpoint URL are required."
+msgstr ""
+
+#: metric-points-error-tracking.php:439
+msgid "Connection failed: %s"
+msgstr ""
+
+#: metric-points-error-tracking.php:444
+msgid "Connection successful!"
+msgstr ""
+
+#: metric-points-error-tracking.php:446
+msgid "Connection failed with status code: %d"
+msgstr ""

@@ -1,0 +1,166 @@
+/* Metric Points Error Tracking Admin Styles */
+
+.mpet-status-section {
+    margin-top: 30px;
+    padding: 20px;
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.mpet-status-section h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+#mpet-connection-status {
+    margin: 15px 0;
+    min-height: 20px;
+}
+
+#mpet-connection-status .notice {
+    margin: 0;
+    padding: 8px 12px;
+}
+
+#mpet-connection-status .dashicons {
+    margin-right: 5px;
+    vertical-align: middle;
+}
+
+.mpet-info-section {
+    margin-top: 30px;
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 1px 1px rgba(0,0,0,.04);
+}
+
+.mpet-info-section h2,
+.mpet-info-section h3 {
+    color: #23282d;
+}
+
+.mpet-info-section ul {
+    list-style-type: disc;
+    margin-left: 20px;
+}
+
+.mpet-info-section li {
+    margin-bottom: 5px;
+}
+
+.mpet-advanced-toggle {
+    margin-top: 20px;
+    text-decoration: none;
+}
+
+.mpet-advanced-toggle:hover {
+    text-decoration: underline;
+}
+
+/* Form field styling */
+#mpet_api_key,
+#mpet_endpoint_url {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+#mpet_ignore_errors {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+/* Connection status indicators */
+.mpet-connection-success {
+    color: #46b450;
+}
+
+.mpet-connection-error {
+    color: #dc3232;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 782px) {
+    .mpet-status-section,
+    .mpet-info-section {
+        padding: 15px;
+    }
+    
+    .form-table td input[type="text"],
+    .form-table td input[type="url"],
+    .form-table td textarea {
+        width: 100%;
+    }
+}
+
+/* Loading spinner for test connection */
+.mpet-testing .spinner {
+    visibility: visible;
+    float: none;
+    margin: 0 5px 0 0;
+}
+
+/* Help text styling */
+.form-table .description {
+    font-style: italic;
+    color: #666;
+}
+
+/* Required field indicator */
+.form-table th label::after {
+    content: "";
+}
+
+.form-table th label[for="mpet_api_key"]::after,
+.form-table th label[for="mpet_endpoint_url"]::after {
+    content: " *";
+    color: #dc3232;
+}
+
+/* Plugin info section styling */
+.mpet-info-section p:first-of-type {
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+/* Settings sections visual separation */
+.form-table tr:nth-child(3) td {
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 20px;
+}
+
+.form-table tr:nth-child(4) th,
+.form-table tr:nth-child(4) td {
+    padding-top: 20px;
+}
+
+/* Button spacing */
+#mpet-test-connection {
+    margin-left: 10px;
+}
+
+/* Notice inline styling */
+.notice.inline {
+    display: inline-block;
+    margin: 5px 0;
+    padding: 5px 10px;
+}
+
+.notice.inline p {
+    margin: 0;
+}
+
+/* Configuration validation styling */
+.mpet-validation-error {
+    border-left: 4px solid #dc3232;
+    padding-left: 12px;
+    margin: 10px 0;
+}
+
+.mpet-validation-success {
+    border-left: 4px solid #46b450;
+    padding-left: 12px;
+    margin: 10px 0;
+}
