@@ -113,8 +113,7 @@
     content: "";
 }
 
-.form-table th label[for="mpet_api_key"]::after,
-.form-table th label[for="mpet_endpoint_url"]::after {
+.form-table th label[for="mpet_api_key"]::after {
     content: " *";
     color: #dc3232;
 }

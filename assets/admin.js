@@ -40,10 +40,9 @@ jQuery(document).ready(function($) {
     // Enable/disable test connection button based on required fields
     function toggleTestButton() {
         var apiKey = $('#mpet_api_key').val().trim();
-        var endpointUrl = $('#mpet_endpoint_url').val().trim();
         var $button = $('#mpet-test-connection');
         
-        if (apiKey && endpointUrl) {
+        if (apiKey) {
             $button.prop('disabled', false);
         } else {
             $button.prop('disabled', true);
@@ -51,24 +50,16 @@ jQuery(document).ready(function($) {
     }
     
     // Monitor required fields
-    $('#mpet_api_key, #mpet_endpoint_url').on('input', toggleTestButton);
+    $('#mpet_api_key').on('input', toggleTestButton);
     
     // Form validation
     $('form').on('submit', function(e) {
         var apiKey = $('#mpet_api_key').val().trim();
-        var endpointUrl = $('#mpet_endpoint_url').val().trim();
         var enabled = $('#mpet_enabled').is(':checked');
         
-        if (enabled && (!apiKey || !endpointUrl)) {
+        if (enabled && !apiKey) {
             e.preventDefault();
-            alert('Please enter both API Key and Endpoint URL when error tracking is enabled.');
-            return false;
-        }
-        
-        // Validate URL format
-        if (endpointUrl && !isValidUrl(endpointUrl)) {
-            e.preventDefault();
-            alert('Please enter a valid URL for the endpoint.');
+            alert('Please enter your API Key when error tracking is enabled.');
             return false;
         }
         
@@ -81,19 +72,9 @@ jQuery(document).ready(function($) {
         }
     });
     
-    // URL validation helper
-    function isValidUrl(string) {
-        try {
-            new URL(string);
-            return true;
-        } catch (_) {
-            return false;
-        }
-    }
-    
     // Show/hide advanced options
     var $advancedToggle = $('<button type="button" class="button button-link mpet-advanced-toggle">Show Advanced Options</button>');
-    var $advancedOptions = $('.form-table tr').slice(3); // Hide debug mode and ignore patterns by default
+    var $advancedOptions = $('.form-table tr').slice(2); // Hide debug mode and ignore patterns by default
     
     $advancedOptions.hide();
     $('.form-table').after($advancedToggle);

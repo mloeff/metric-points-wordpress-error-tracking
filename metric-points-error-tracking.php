@@ -93,10 +93,6 @@ class MetricPointsErrorTracking {
             'sanitize_callback' => 'sanitize_text_field'
         ));
         
-        register_setting('mpet_settings', 'mpet_endpoint_url', array(
-            'sanitize_callback' => 'esc_url_raw'
-        ));
-        
         register_setting('mpet_settings', 'mpet_enabled', array(
             'sanitize_callback' => 'absint'
         ));
@@ -165,16 +161,6 @@ class MetricPointsErrorTracking {
                     
                     <tr>
                         <th scope="row">
-                            <label for="mpet_endpoint_url"><?php _e('Endpoint URL', 'metric-points-error-tracking'); ?> *</label>
-                        </th>
-                        <td>
-                            <input type="url" id="mpet_endpoint_url" name="mpet_endpoint_url" value="<?php echo esc_attr(get_option('mpet_endpoint_url')); ?>" class="regular-text" required />
-                            <p class="description"><?php _e('The endpoint URL for your Metric Points error tracking service (e.g., https://metricpoints.com/api/error-reports).', 'metric-points-error-tracking'); ?></p>
-                        </td>
-                    </tr>
-                    
-                    <tr>
-                        <th scope="row">
                             <label for="mpet_sample_rate"><?php _e('Sample Rate (%)', 'metric-points-error-tracking'); ?></label>
                         </th>
                         <td>
@@ -209,7 +195,7 @@ class MetricPointsErrorTracking {
                     <div id="mpet-connection-status">
                         <p><?php _e('Save settings to test connection...', 'metric-points-error-tracking'); ?></p>
                     </div>
-                    <button type="button" id="mpet-test-connection" class="button button-secondary" <?php echo (!get_option('mpet_api_key') || !get_option('mpet_endpoint_url')) ? 'disabled' : ''; ?>>
+                    <button type="button" id="mpet-test-connection" class="button button-secondary" <?php echo (!get_option('mpet_api_key')) ? 'disabled' : ''; ?>>
                         <?php _e('Test Connection', 'metric-points-error-tracking'); ?>
                     </button>
                 </div>
@@ -275,10 +261,9 @@ class MetricPointsErrorTracking {
         }
         
         $api_key = get_option('mpet_api_key');
-        $endpoint_url = get_option('mpet_endpoint_url');
         
         // Don't load if required settings are missing
-        if (!$api_key || !$endpoint_url) {
+        if (!$api_key) {
             return;
         }
         
@@ -307,7 +292,7 @@ class MetricPointsErrorTracking {
         // Build base configuration
         $config = array(
             'apiKey' => $api_key,
-            'endpoint' => $endpoint_url,
+            'endpoint' => 'https://metricpoints.com/api/error-reports', // Fixed base URL
             'sampleRate' => floatval($sample_rate),
             'debug' => $debug_mode ? true : false,
             'ignorePatterns' => $ignore_array,
@@ -499,15 +484,14 @@ function mpet_test_connection_callback() {
     }
     
     $api_key = get_option('mpet_api_key');
-    $endpoint_url = get_option('mpet_endpoint_url');
     
-    if (!$api_key || !$endpoint_url) {
-        wp_send_json_error(__('API Key and Endpoint URL are required.', 'metric-points-error-tracking'));
+    if (!$api_key) {
+        wp_send_json_error(__('API Key is required.', 'metric-points-error-tracking'));
         return;
     }
     
     // Build the full endpoint URL with API key
-    $test_url = rtrim($endpoint_url, '/') . '/' . $api_key;
+    $test_url = 'https://metricpoints.com/api/error-reports/' . $api_key;
     
     // Test connection with a simple ping
     $response = wp_remote_post($test_url, array(

@@ -37,9 +37,8 @@ After activation, go to **Settings > Error Tracking** in your WordPress admin pa
 ### Required Settings
 
 - **API Key**: Your Metric Points API authentication key (format: `err_xxxxxxxxx.xxxxx`)
-- **Endpoint URL**: The base URL of your Metric Points error tracking service (e.g., `https://metricpoints.com/api/error-reports`)
 
-**Important**: The plugin will automatically append your API key to the endpoint URL, so you only need to provide the base endpoint.
+**Note**: The endpoint URL is automatically set to `https://metricpoints.com/api/error-reports` and cannot be changed.
 
 ### Optional Settings
 
@@ -102,8 +101,8 @@ The plugin sends error data in the following JSON format:
 
 ### Authentication
 
-The plugin sends requests to the endpoint with the API key in the URL path:
-- **URL Format**: `https://yourdomain.com/api/error-reports/{api_key}`
+The plugin sends requests to the Metric Points endpoint with the API key in the URL path:
+- **URL Format**: `https://metricpoints.com/api/error-reports/{api_key}`
 - **Headers**: `Content-Type: application/json`
 
 ### Sample Rate

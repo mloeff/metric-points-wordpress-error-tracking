@@ -13,7 +13,6 @@
 3. **Configure Settings**
    - Go to Settings > Error Tracking
    - Enter your API Key (format: `err_xxxxxxxxx`)
-   - Enter your Endpoint URL (e.g., `https://yourdomain.com/api/error-reports`)
    - Enable error tracking
    - Test the connection
 
@@ -30,8 +29,7 @@
 ### Configuration Examples
 
 **Basic Setup:**
-- API Key: `err_68914e5352e501.24425919`
-- Endpoint URL: `https://yourdomain.com/api/error-reports`
+- API Key: `err_68914e5352e501example.24425919`
 - Sample Rate: `100` (track all errors)
 
 **High Traffic Site:**
@@ -85,13 +83,12 @@ To use the test page:
 
 **Connection Test Fails:**
 - Verify your API key format (should start with `err_`)
-- Check that your endpoint URL is correct
 - Ensure your Metric Points service is running
 - Check for firewall or network restrictions
 
 **Errors Not Appearing:**
 - Verify the plugin is enabled
-- Check that both API key and endpoint are configured
+- Check that your API key is configured
 - Enable debug mode to see console messages
 - Check browser console for JavaScript errors
 

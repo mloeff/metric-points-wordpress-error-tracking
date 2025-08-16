@@ -273,7 +273,7 @@ main() {
     echo "1. Go to WordPress admin > Plugins"
     echo "2. Activate 'Metric Points Error Tracking'"
     echo "3. Go to Settings > Error Tracking"
-    echo "4. Configure your API key and endpoint"
+    echo "4. Configure your API key"
     echo "5. Test the connection"
     
     if [ "$deploy_test" = true ]; then

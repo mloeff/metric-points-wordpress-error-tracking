@@ -80,7 +80,7 @@
 
     <div class="warning">
         <strong>Note:</strong> Make sure you have the Metric Points Error Tracking plugin activated and configured 
-        in your WordPress admin before testing. Check the browser console for debug messages.
+        in your WordPress admin before testing. You only need to enter your API key in Settings > Error Tracking.
     </div>
 
     <div class="test-section">
@@ -287,7 +287,7 @@
                     <div style="color: #46b450;">
                         <h3>✅ Error Tracker Active</h3>
                         <p><strong>API Key:</strong> ${window.MetricPointsConfig.apiKey ? 'Configured' : 'Not configured'}</p>
-                        <p><strong>Endpoint:</strong> ${window.MetricPointsConfig.endpoint || 'Not configured'}</p>
+                        <p><strong>Endpoint:</strong> https://metricpoints.com/api/error-reports (Fixed)</p>
                         <p><strong>Sample Rate:</strong> ${window.MetricPointsConfig.sampleRate || 'Not configured'}%</p>
                         <p><strong>Debug Mode:</strong> ${window.MetricPointsConfig.debug ? 'Enabled' : 'Disabled'}</p>
                         <p><strong>Ignore Patterns:</strong> ${window.MetricPointsConfig.ignorePatterns ? window.MetricPointsConfig.ignorePatterns.length : 0} patterns</p>
