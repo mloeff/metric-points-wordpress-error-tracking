@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error Tracking Test Page</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+        .test-button {
+            background: #0073aa;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #005a87;
+        }
+        .test-button.danger {
+            background: #dc3232;
+        }
+        .test-button.danger:hover {
+            background: #b32d2d;
+        }
+        .info {
+            background: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .warning {
+            background: #fff8e1;
+            border: 1px solid #ffd54f;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        code {
+            background: #f1f1f1;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Menlo', monospace;
+        }
+        .console-output {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Error Tracking Test Page</h1>
+    
+    <div class="info">
+        <strong>Purpose:</strong> This page helps you test your Metric Points Error Tracking setup. 
+        Use the buttons below to trigger different types of errors and verify they're being captured.
+    </div>
+
+    <div class="warning">
+        <strong>Note:</strong> Make sure you have the Metric Points Error Tracking plugin activated and configured 
+        in your WordPress admin before testing. Check the browser console for debug messages.
+    </div>
+
+    <div class="test-section">
+        <h2>JavaScript Runtime Errors</h2>
+        <p>These buttons will trigger actual JavaScript errors that should be captured by the error tracker.</p>
+        
+        <button class="test-button danger" onclick="triggerReferenceError()">Trigger ReferenceError</button>
+        <button class="test-button danger" onclick="triggerTypeError()">Trigger TypeError</button>
+        <button class="test-button danger" onclick="triggerSyntaxError()">Trigger SyntaxError</button>
+        <button class="test-button danger" onclick="triggerRangeError()">Trigger RangeError</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Promise Rejections</h2>
+        <p>These buttons will trigger unhandled promise rejections.</p>
+        
+        <button class="test-button danger" onclick="triggerUnhandledRejection()">Trigger Unhandled Rejection</button>
+        <button class="test-button" onclick="triggerHandledRejection()">Trigger Handled Rejection</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Custom Error Reporting</h2>
+        <p>Test manual error reporting functionality.</p>
+        
+        <button class="test-button" onclick="reportCustomError()">Report Custom Error</button>
+        <button class="test-button" onclick="reportWarning()">Report Warning</button>
+        <button class="test-button" onclick="reportInfo()">Report Info</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Console Output</h2>
+        <p>Check this area for any console messages from the error tracker:</p>
+        <div id="console-output" class="console-output">
+            <div>Console output will appear here...</div>
+        </div>
+        <button class="test-button" onclick="clearConsole()">Clear Console</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Error Tracker Status</h2>
+        <div id="status-output">
+            <p>Checking error tracker status...</p>
+        </div>
+    </div>
+
+    <script>
+        // Console output capture
+        const originalConsoleLog = console.log;
+        const originalConsoleError = console.error;
+        const originalConsoleWarn = console.warn;
+        const originalConsoleInfo = console.info;
+
+        function addToConsole(message, type = 'log') {
+            const output = document.getElementById('console-output');
+            const timestamp = new Date().toLocaleTimeString();
+            const div = document.createElement('div');
+            div.style.color = type === 'error' ? '#ff6b6b' : type === 'warn' ? '#ffd93d' : '#6bcf7f';
+            div.textContent = `[${timestamp}] ${message}`;
+            output.appendChild(div);
+            output.scrollTop = output.scrollHeight;
+        }
+
+        console.log = function(...args) {
+            originalConsoleLog.apply(console, args);
+            addToConsole(args.join(' '), 'log');
+        };
+
+        console.error = function(...args) {
+            originalConsoleError.apply(console, args);
+            addToConsole(args.join(' '), 'error');
+        };
+
+        console.warn = function(...args) {
+            originalConsoleWarn.apply(console, args);
+            addToConsole(args.join(' '), 'warn');
+        };
+
+        console.info = function(...args) {
+            originalConsoleInfo.apply(console, args);
+            addToConsole(args.join(' '), 'info');
+        };
+
+        // Error triggering functions
+        function triggerReferenceError() {
+            console.log('Triggering ReferenceError...');
+            try {
+                undefinedVariable.someMethod();
+            } catch (e) {
+                console.error('Caught ReferenceError:', e.message);
+            }
+        }
+
+        function triggerTypeError() {
+            console.log('Triggering TypeError...');
+            try {
+                const obj = null;
+                obj.property = 'value';
+            } catch (e) {
+                console.error('Caught TypeError:', e.message);
+            }
+        }
+
+        function triggerSyntaxError() {
+            console.log('Triggering SyntaxError...');
+            try {
+                eval('function test() {');
+            } catch (e) {
+                console.error('Caught SyntaxError:', e.message);
+            }
+        }
+
+        function triggerRangeError() {
+            console.log('Triggering RangeError...');
+            try {
+                const arr = new Array(-1);
+            } catch (e) {
+                console.error('Caught RangeError:', e.message);
+            }
+        }
+
+        function triggerUnhandledRejection() {
+            console.log('Triggering unhandled promise rejection...');
+            Promise.reject(new Error('This is an unhandled promise rejection'));
+        }
+
+        function triggerHandledRejection() {
+            console.log('Triggering handled promise rejection...');
+            Promise.reject(new Error('This is a handled promise rejection'))
+                .catch(error => {
+                    console.log('Caught promise rejection:', error.message);
+                });
+        }
+
+        function reportCustomError() {
+            console.log('Reporting custom error...');
+            if (window.MetricPointsErrorTracker && window.MetricPointsErrorTracker.reportError) {
+                window.MetricPointsErrorTracker.reportError({
+                    type: 'custom_error',
+                    message: 'This is a custom error for testing',
+                    level: 'error',
+                    timestamp: new Date().toISOString(),
+                    url: window.location.href,
+                    userAgent: navigator.userAgent,
+                    metadata: {
+                        test_type: 'manual_report',
+                        source: 'test_page'
+                    }
+                });
+            } else {
+                console.warn('MetricPointsErrorTracker not available');
+            }
+        }
+
+        function reportWarning() {
+            console.log('Reporting warning...');
+            if (window.MetricPointsErrorTracker && window.MetricPointsErrorTracker.reportError) {
+                window.MetricPointsErrorTracker.reportError({
+                    type: 'custom_warning',
+                    message: 'This is a custom warning for testing',
+                    level: 'warning',
+                    timestamp: new Date().toISOString(),
+                    url: window.location.href,
+                    userAgent: navigator.userAgent,
+                    metadata: {
+                        test_type: 'manual_report',
+                        source: 'test_page'
+                    }
+                });
+            } else {
+                console.warn('MetricPointsErrorTracker not available');
+            }
+        }
+
+        function reportInfo() {
+            console.log('Reporting info message...');
+            if (window.MetricPointsErrorTracker && window.MetricPointsErrorTracker.reportError) {
+                window.MetricPointsErrorTracker.reportError({
+                    type: 'custom_info',
+                    message: 'This is a custom info message for testing',
+                    level: 'info',
+                    timestamp: new Date().toISOString(),
+                    url: window.location.href,
+                    userAgent: navigator.userAgent,
+                    metadata: {
+                        test_type: 'manual_report',
+                        source: 'test_page'
+                    }
+                });
+            } else {
+                console.warn('MetricPointsErrorTracker not available');
+            }
+        }
+
+        function clearConsole() {
+            const output = document.getElementById('console-output');
+            output.innerHTML = '<div>Console cleared...</div>';
+        }
+
+        function checkErrorTrackerStatus() {
+            const statusOutput = document.getElementById('status-output');
+            
+            if (window.MetricPointsConfig) {
+                statusOutput.innerHTML = `
+                    <div style="color: #46b450;">
+                        <h3>✅ Error Tracker Active</h3>
+                        <p><strong>API Key:</strong> ${window.MetricPointsConfig.apiKey ? 'Configured' : 'Not configured'}</p>
+                        <p><strong>Endpoint:</strong> ${window.MetricPointsConfig.endpoint || 'Not configured'}</p>
+                        <p><strong>Sample Rate:</strong> ${window.MetricPointsConfig.sampleRate || 'Not configured'}%</p>
+                        <p><strong>Debug Mode:</strong> ${window.MetricPointsConfig.debug ? 'Enabled' : 'Disabled'}</p>
+                        <p><strong>Ignore Patterns:</strong> ${window.MetricPointsConfig.ignorePatterns ? window.MetricPointsConfig.ignorePatterns.length : 0} patterns</p>
+                    </div>
+                `;
+            } else {
+                statusOutput.innerHTML = `
+                    <div style="color: #dc3232;">
+                        <h3>❌ Error Tracker Not Active</h3>
+                        <p>The Metric Points Error Tracking plugin is not active or not properly configured.</p>
+                        <p>Please check your WordPress admin settings at <strong>Settings > Error Tracking</strong>.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Check status when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Wait a bit for the error tracker to initialize
+            setTimeout(checkErrorTrackerStatus, 1000);
+            
+            console.log('Error tracking test page loaded');
+            console.log('Check the browser console for detailed information');
+        });
+
+        // Add some intentional errors for testing
+        setTimeout(() => {
+            console.log('Triggering a delayed error for testing...');
+            try {
+                const testObj = { test: 'value' };
+                testObj.nonExistentMethod();
+            } catch (e) {
+                console.error('Delayed error caught:', e.message);
+            }
+        }, 3000);
+    </script>
+</body>
+</html>

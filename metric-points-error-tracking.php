@@ -159,7 +159,7 @@ class MetricPointsErrorTracking {
                         </th>
                         <td>
                             <input type="text" id="mpet_api_key" name="mpet_api_key" value="<?php echo esc_attr(get_option('mpet_api_key')); ?>" class="regular-text" required />
-                            <p class="description"><?php _e('Your Metric Points API key for authentication.', 'metric-points-error-tracking'); ?></p>
+                            <p class="description"><?php _e('Your Metric Points API key for authentication (format: err_xxxxxxxxx).', 'metric-points-error-tracking'); ?></p>
                         </td>
                     </tr>
                     
@@ -169,7 +169,7 @@ class MetricPointsErrorTracking {
                         </th>
                         <td>
                             <input type="url" id="mpet_endpoint_url" name="mpet_endpoint_url" value="<?php echo esc_attr(get_option('mpet_endpoint_url')); ?>" class="regular-text" required />
-                            <p class="description"><?php _e('The endpoint URL for your Metric Points error tracking service.', 'metric-points-error-tracking'); ?></p>
+                            <p class="description"><?php _e('The endpoint URL for your Metric Points error tracking service (e.g., https://metricpoints.com/api/error-reports).', 'metric-points-error-tracking'); ?></p>
                         </td>
                     </tr>
                     
@@ -282,6 +282,12 @@ class MetricPointsErrorTracking {
             return;
         }
         
+        // Allow filtering of whether script should load
+        $should_load = apply_filters('mpet_should_load_script', true);
+        if (!$should_load) {
+            return;
+        }
+        
         $sample_rate = get_option('mpet_sample_rate', 100);
         $debug_mode = get_option('mpet_debug_mode', 0);
         $ignore_patterns = get_option('mpet_ignore_errors', '');
@@ -298,22 +304,33 @@ class MetricPointsErrorTracking {
             }
         }
         
+        // Build base configuration
+        $config = array(
+            'apiKey' => $api_key,
+            'endpoint' => $endpoint_url,
+            'sampleRate' => floatval($sample_rate),
+            'debug' => $debug_mode ? true : false,
+            'ignorePatterns' => $ignore_array,
+            'metadata' => array(
+                'wordpress_version' => get_bloginfo('version'),
+                'plugin_version' => MPET_VERSION,
+                'site_url' => get_site_url(),
+                'theme' => get_stylesheet(),
+                'user_role' => is_user_logged_in() ? 'logged_in' : 'anonymous'
+            )
+        );
+        
+        // Allow filtering of configuration
+        $config = apply_filters('mpet_script_config', $config);
+        
+        // Fire action before script output
+        do_action('mpet_before_script_output', $config);
+        
         ?>
         <script type="text/javascript">
         (function() {
             // Metric Points Error Tracking Configuration
-            window.MetricPointsConfig = {
-                apiKey: <?php echo json_encode($api_key); ?>,
-                endpoint: <?php echo json_encode($endpoint_url); ?>,
-                sampleRate: <?php echo floatval($sample_rate); ?>,
-                debug: <?php echo $debug_mode ? 'true' : 'false'; ?>,
-                ignorePatterns: <?php echo json_encode($ignore_array); ?>,
-                metadata: {
-                    wordpress_version: <?php echo json_encode(get_bloginfo('version')); ?>,
-                    plugin_version: <?php echo json_encode(MPET_VERSION); ?>,
-                    site_url: <?php echo json_encode(get_site_url()); ?>
-                }
-            };
+            window.MetricPointsConfig = <?php echo json_encode($config); ?>;
             
             // Initialize error tracking
             window.MetricPointsErrorTracker = {
@@ -322,7 +339,7 @@ class MetricPointsErrorTracking {
                     
                     // Handle JavaScript errors
                     window.onerror = function(message, source, lineno, colno, error) {
-                        self.reportError({
+                        var errorData = {
                             type: 'javascript_error',
                             message: message,
                             source: source,
@@ -331,21 +348,37 @@ class MetricPointsErrorTracking {
                             stack: error ? error.stack : null,
                             timestamp: new Date().toISOString(),
                             url: window.location.href,
-                            userAgent: navigator.userAgent
-                        });
+                            userAgent: navigator.userAgent,
+                            level: 'error'
+                        };
+                        
+                        // Allow filtering of error data
+                        if (window.MetricPointsConfig.onErrorDataFilter) {
+                            errorData = window.MetricPointsConfig.onErrorDataFilter(errorData);
+                        }
+                        
+                        self.reportError(errorData);
                         return false;
                     };
                     
                     // Handle unhandled promise rejections
                     window.addEventListener('unhandledrejection', function(event) {
-                        self.reportError({
+                        var errorData = {
                             type: 'unhandled_rejection',
                             message: event.reason ? event.reason.toString() : 'Unhandled Promise Rejection',
                             stack: event.reason && event.reason.stack ? event.reason.stack : null,
                             timestamp: new Date().toISOString(),
                             url: window.location.href,
-                            userAgent: navigator.userAgent
-                        });
+                            userAgent: navigator.userAgent,
+                            level: 'error'
+                        };
+                        
+                        // Allow filtering of error data
+                        if (window.MetricPointsConfig.onErrorDataFilter) {
+                            errorData = window.MetricPointsConfig.onErrorDataFilter(errorData);
+                        }
+                        
+                        self.reportError(errorData);
                     });
                     
                     if (window.MetricPointsConfig.debug) {
@@ -390,14 +423,13 @@ class MetricPointsErrorTracking {
                     
                     // Send to endpoint
                     var xhr = new XMLHttpRequest();
-                    xhr.open('POST', window.MetricPointsConfig.endpoint, true);
+                    xhr.open('POST', window.MetricPointsConfig.endpoint + '/' + encodeURIComponent(window.MetricPointsConfig.apiKey), true);
                     xhr.setRequestHeader('Content-Type', 'application/json');
-                    xhr.setRequestHeader('Authorization', 'Bearer ' + window.MetricPointsConfig.apiKey);
                     
                     xhr.onreadystatechange = function() {
                         if (xhr.readyState === 4) {
                             if (window.MetricPointsConfig.debug) {
-                                if (xhr.status === 200) {
+                                if (xhr.status === 200 || xhr.status === 204) {
                                     console.log('Error reported successfully');
                                 } else {
                                     console.error('Failed to report error:', xhr.status);
@@ -427,6 +459,9 @@ class MetricPointsErrorTracking {
         })();
         </script>
         <?php
+        
+        // Fire action after script output
+        do_action('mpet_after_script_output', $config);
     }
     
     /**
@@ -471,16 +506,20 @@ function mpet_test_connection_callback() {
         return;
     }
     
+    // Build the full endpoint URL with API key
+    $test_url = rtrim($endpoint_url, '/') . '/' . $api_key;
+    
     // Test connection with a simple ping
-    $response = wp_remote_post($endpoint_url, array(
+    $response = wp_remote_post($test_url, array(
         'headers' => array(
-            'Authorization' => 'Bearer ' . $api_key,
             'Content-Type' => 'application/json'
         ),
         'body' => json_encode(array(
             'type' => 'connection_test',
+            'message' => 'WordPress Plugin Connection Test',
             'timestamp' => current_time('c'),
-            'source' => 'wordpress_plugin'
+            'source' => 'wordpress_plugin',
+            'level' => 'info'
         )),
         'timeout' => 10
     ));
