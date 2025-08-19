@@ -77,37 +77,198 @@ class MetricPointsErrorTracking {
      */
     public function add_admin_menu() {
         add_options_page(
-            __('Metric Points Error Tracking', 'metric-points-error-tracking'),
-            __('Error Tracking', 'metric-points-error-tracking'),
+            'Metric Points Error Tracking',
+            'Error Tracking',
             'manage_options',
             'metric-points-error-tracking',
             array($this, 'admin_page')
         );
     }
-    
+
     /**
-     * Register plugin settings
+     * Register settings
      */
     public function register_settings() {
-        register_setting('mpet_settings', 'mpet_api_key', array(
-            'sanitize_callback' => 'sanitize_text_field'
-        ));
+        register_setting('mpet_options', 'mpet_api_key');
+        register_setting('mpet_options', 'mpet_sample_rate');
+        register_setting('mpet_options', 'mpet_debug_mode');
+        register_setting('mpet_options', 'mpet_ignore_patterns');
         
-        register_setting('mpet_settings', 'mpet_enabled', array(
-            'sanitize_callback' => 'absint'
-        ));
+        // Enhanced features settings
+        register_setting('mpet_options', 'mpet_session_replay_enabled');
+        register_setting('mpet_options', 'mpet_session_replay_max_events');
+        register_setting('mpet_options', 'mpet_mouse_tracking');
+        register_setting('mpet_options', 'mpet_click_tracking');
+        register_setting('mpet_options', 'mpet_scroll_tracking');
+        register_setting('mpet_options', 'mpet_keypress_tracking');
+        register_setting('mpet_options', 'mpet_focus_tracking');
+        register_setting('mpet_options', 'mpet_url_tracking');
         
-        register_setting('mpet_settings', 'mpet_debug_mode', array(
-            'sanitize_callback' => 'absint'
-        ));
+        register_setting('mpet_options', 'mpet_performance_enabled');
+        register_setting('mpet_options', 'mpet_memory_monitoring');
         
-        register_setting('mpet_settings', 'mpet_ignore_errors', array(
-            'sanitize_callback' => 'sanitize_textarea_field'
-        ));
+        register_setting('mpet_options', 'mpet_privacy_mask_input');
+        register_setting('mpet_options', 'mpet_privacy_exclude_fields');
+        register_setting('mpet_options', 'mpet_user_consent');
         
-        register_setting('mpet_settings', 'mpet_sample_rate', array(
-            'sanitize_callback' => array($this, 'sanitize_sample_rate')
-        ));
+        add_settings_section(
+            'mpet_main_section',
+            'Required Settings',
+            array($this, 'main_section_callback'),
+            'mpet_options'
+        );
+        
+        add_settings_section(
+            'mpet_enhanced_section',
+            'Enhanced Features',
+            array($this, 'enhanced_section_callback'),
+            'mpet_options'
+        );
+        
+        add_settings_section(
+            'mpet_privacy_section',
+            'Privacy & Security',
+            array($this, 'privacy_section_callback'),
+            'mpet_options'
+        );
+        
+        add_settings_field(
+            'mpet_api_key',
+            'API Key',
+            array($this, 'api_key_callback'),
+            'mpet_options',
+            'mpet_main_section'
+        );
+        
+        add_settings_field(
+            'mpet_sample_rate',
+            'Sample Rate',
+            array($this, 'sample_rate_callback'),
+            'mpet_options',
+            'mpet_main_section'
+        );
+        
+        add_settings_field(
+            'mpet_debug_mode',
+            'Debug Mode',
+            array($this, 'debug_mode_callback'),
+            'mpet_options',
+            'mpet_main_section'
+        );
+        
+        add_settings_field(
+            'mpet_ignore_patterns',
+            'Ignore Patterns',
+            array($this, 'ignore_patterns_callback'),
+            'mpet_options',
+            'mpet_main_section'
+        );
+        
+        // Enhanced features fields
+        add_settings_field(
+            'mpet_session_replay_enabled',
+            'Enable Session Replay',
+            array($this, 'session_replay_enabled_callback'),
+            'mpet_options',
+            'mpet_enhanced_section'
+        );
+        
+        add_settings_field(
+            'mpet_session_replay_max_events',
+            'Max Events to Track',
+            array($this, 'max_events_callback'),
+            'mpet_options',
+            'mpet_enhanced_section'
+        );
+        
+        add_settings_field(
+            'mpet_mouse_tracking',
+            'Mouse Movement Tracking',
+            array($this, 'mouse_tracking_callback'),
+            'mpet_options',
+            'mpet_enhanced_section'
+        );
+        
+        add_settings_field(
+            'mpet_click_tracking',
+            'Click Tracking',
+            array($this, 'click_tracking_callback'),
+            'mpet_options',
+            'mpet_enhanced_section'
+        );
+        
+        add_settings_field(
+            'mpet_scroll_tracking',
+            'Scroll Tracking',
+            array($this, 'scroll_tracking_callback'),
+            'mpet_options',
+            'mpet_enhanced_section'
+        );
+        
+        add_settings_field(
+            'mpet_keypress_tracking',
+            'Keypress Tracking',
+            array($this, 'keypress_tracking_callback'),
+            'mpet_options',
+            'mpet_enhanced_section'
+        );
+        
+        add_settings_field(
+            'mpet_focus_tracking',
+            'Focus Tracking',
+            array($this, 'focus_tracking_callback'),
+            'mpet_options',
+            'mpet_enhanced_section'
+        );
+        
+        add_settings_field(
+            'mpet_url_tracking',
+            'URL Change Tracking',
+            array($this, 'url_tracking_callback'),
+            'mpet_options',
+            'mpet_enhanced_section'
+        );
+        
+        add_settings_field(
+            'mpet_performance_enabled',
+            'Performance Monitoring',
+            array($this, 'performance_enabled_callback'),
+            'mpet_options',
+            'mpet_enhanced_section'
+        );
+        
+        add_settings_field(
+            'mpet_memory_monitoring',
+            'Memory Usage Monitoring',
+            array($this, 'memory_monitoring_callback'),
+            'mpet_options',
+            'mpet_enhanced_section'
+        );
+        
+        // Privacy fields
+        add_settings_field(
+            'mpet_privacy_mask_input',
+            'Mask User Input',
+            array($this, 'privacy_mask_input_callback'),
+            'mpet_options',
+            'mpet_privacy_section'
+        );
+        
+        add_settings_field(
+            'mpet_privacy_exclude_fields',
+            'Exclude Sensitive Fields',
+            array($this, 'privacy_exclude_fields_callback'),
+            'mpet_options',
+            'mpet_privacy_section'
+        );
+        
+        add_settings_field(
+            'mpet_user_consent',
+            'Require User Consent',
+            array($this, 'user_consent_callback'),
+            'mpet_options',
+            'mpet_options'
+        );
     }
     
     /**
@@ -116,6 +277,126 @@ class MetricPointsErrorTracking {
     public function sanitize_sample_rate($value) {
         $value = floatval($value);
         return max(0, min(100, $value));
+    }
+    
+    /**
+     * Section callbacks
+     */
+    public function main_section_callback() {
+        echo '<p>Configure the basic error tracking settings. Only the API Key is required.</p>';
+    }
+    
+    public function enhanced_section_callback() {
+        echo '<p>Enable advanced features like session replay, performance monitoring, and detailed user tracking.</p>';
+    }
+    
+    public function privacy_section_callback() {
+        echo '<p>Configure privacy and security settings to protect user data and comply with regulations.</p>';
+    }
+    
+    /**
+     * Field callbacks
+     */
+    public function api_key_callback() {
+        $api_key = get_option('mpet_api_key');
+        echo '<input type="text" id="mpet_api_key" name="mpet_api_key" value="' . esc_attr($api_key) . '" class="regular-text" required />';
+        echo '<p class="description">Your Metric Points API key for error tracking.</p>';
+    }
+    
+    public function sample_rate_callback() {
+        $sample_rate = get_option('mpet_sample_rate', 1.0);
+        echo '<input type="number" id="mpet_sample_rate" name="mpet_sample_rate" value="' . esc_attr($sample_rate) . '" min="0.1" max="1.0" step="0.1" class="small-text" />';
+        echo '<p class="description">Percentage of errors to track (0.1 = 10%, 1.0 = 100%).</p>';
+    }
+    
+    public function debug_mode_callback() {
+        $debug_mode = get_option('mpet_debug_mode', false);
+        echo '<input type="checkbox" id="mpet_debug_mode" name="mpet_debug_mode" value="1" ' . checked(1, $debug_mode, false) . ' />';
+        echo '<label for="mpet_debug_mode">Enable debug logging in browser console</label>';
+    }
+    
+    public function ignore_patterns_callback() {
+        $ignore_patterns = get_option('mpet_ignore_patterns', '');
+        echo '<textarea id="mpet_ignore_patterns" name="mpet_ignore_patterns" rows="4" class="large-text">' . esc_textarea($ignore_patterns) . '</textarea>';
+        echo '<p class="description">Enter error message patterns to ignore (one per line). Supports regex patterns.</p>';
+    }
+    
+    public function session_replay_enabled_callback() {
+        $enabled = get_option('mpet_session_replay_enabled', true);
+        echo '<input type="checkbox" id="mpet_session_replay_enabled" name="mpet_session_replay_enabled" value="1" ' . checked(1, $enabled, false) . ' />';
+        echo '<label for="mpet_session_replay_enabled">Enable session replay functionality</label>';
+    }
+    
+    public function max_events_callback() {
+        $max_events = get_option('mpet_session_replay_max_events', 1000);
+        echo '<input type="number" id="mpet_session_replay_max_events" name="mpet_session_replay_max_events" value="' . esc_attr($max_events) . '" min="100" max="10000" step="100" class="small-text" />';
+        echo '<p class="description">Maximum number of events to track per session.</p>';
+    }
+    
+    public function mouse_tracking_callback() {
+        $enabled = get_option('mpet_mouse_tracking', true);
+        echo '<input type="checkbox" id="mpet_mouse_tracking" name="mpet_mouse_tracking" value="1" ' . checked(1, $enabled, false) . ' />';
+        echo '<label for="mpet_mouse_tracking">Track mouse movements</label>';
+    }
+    
+    public function click_tracking_callback() {
+        $enabled = get_option('mpet_click_tracking', true);
+        echo '<input type="checkbox" id="mpet_click_tracking" name="mpet_click_tracking" value="1" ' . checked(1, $enabled, false) . ' />';
+        echo '<label for="mpet_click_tracking">Track mouse clicks</label>';
+    }
+    
+    public function scroll_tracking_callback() {
+        $enabled = get_option('mpet_scroll_tracking', true);
+        echo '<input type="checkbox" id="mpet_scroll_tracking" name="mpet_scroll_tracking" value="1" ' . checked(1, $enabled, false) . ' />';
+        echo '<label for="mpet_scroll_tracking">Track scroll positions</label>';
+    }
+    
+    public function keypress_tracking_callback() {
+        $enabled = get_option('mpet_keypress_tracking', true);
+        echo '<input type="checkbox" id="mpet_keypress_tracking" name="mpet_keypress_tracking" value="1" ' . checked(1, $enabled, false) . ' />';
+        echo '<label for="mpet_keypress_tracking">Track keyboard input</label>';
+    }
+    
+    public function focus_tracking_callback() {
+        $enabled = get_option('mpet_focus_tracking', true);
+        echo '<input type="checkbox" id="mpet_focus_tracking" name="mpet_focus_tracking" value="1" ' . checked(1, $enabled, false) . ' />';
+        echo '<label for="mpet_focus_tracking">Track focus changes</label>';
+    }
+    
+    public function url_tracking_callback() {
+        $enabled = get_option('mpet_url_tracking', true);
+        echo '<input type="checkbox" id="mpet_url_tracking" name="mpet_url_tracking" value="1" ' . checked(1, $enabled, false) . ' />';
+        echo '<label for="mpet_url_tracking">Track URL changes</label>';
+    }
+    
+    public function performance_enabled_callback() {
+        $enabled = get_option('mpet_performance_enabled', true);
+        echo '<input type="checkbox" id="mpet_performance_enabled" name="mpet_performance_enabled" value="1" ' . checked(1, $enabled, false) . ' />';
+        echo '<label for="mpet_performance_enabled">Monitor page performance metrics</label>';
+    }
+    
+    public function memory_monitoring_callback() {
+        $enabled = get_option('mpet_memory_monitoring', true);
+        echo '<input type="checkbox" id="mpet_memory_monitoring" name="mpet_memory_monitoring" value="1" ' . checked(1, $enabled, false) . ' />';
+        echo '<label for="mpet_memory_monitoring">Monitor memory usage</label>';
+    }
+    
+    public function privacy_mask_input_callback() {
+        $enabled = get_option('mpet_privacy_mask_input', true);
+        echo '<input type="checkbox" id="mpet_privacy_mask_input" name="mpet_privacy_mask_input" value="1" ' . checked(1, $enabled, false) . ' />';
+        echo '<label for="mpet_privacy_mask_input">Mask sensitive user input data</label>';
+    }
+    
+    public function privacy_exclude_fields_callback() {
+        $exclude_fields = get_option('mpet_privacy_exclude_fields', 'password,credit-card,ssn,passwd');
+        echo '<input type="text" id="mpet_privacy_exclude_fields" name="mpet_privacy_exclude_fields" value="' . esc_attr($exclude_fields) . '" class="regular-text" />';
+        echo '<p class="description">Comma-separated list of field names to exclude from tracking.</p>';
+    }
+    
+    public function user_consent_callback() {
+        $enabled = get_option('mpet_user_consent', false);
+        echo '<input type="checkbox" id="mpet_user_consent" name="mpet_user_consent" value="1" ' . checked(1, $enabled, false) . ' />';
+        echo '<label for="mpet_user_consent">Require explicit user consent before tracking</label>';
     }
     
     /**
@@ -134,8 +415,8 @@ class MetricPointsErrorTracking {
             
             <form method="post" action="options.php">
                 <?php
-                settings_fields('mpet_settings');
-                do_settings_sections('mpet_settings');
+                settings_fields('mpet_options');
+                do_settings_sections('mpet_options');
                 ?>
                 
                 <table class="form-table" role="presentation">
@@ -252,41 +533,50 @@ class MetricPointsErrorTracking {
     }
     
     /**
-     * Add tracking script to frontend
+     * Add the tracking script to the page
      */
     public function add_tracking_script() {
-        // Check if tracking is enabled
-        if (!get_option('mpet_enabled', 0)) {
-            return;
-        }
-        
         $api_key = get_option('mpet_api_key');
+        $sample_rate = get_option('mpet_sample_rate', 1.0);
+        $debug_mode = get_option('mpet_debug_mode', false);
+        $ignore_patterns = get_option('mpet_ignore_patterns', '');
         
-        // Don't load if required settings are missing
-        if (!$api_key) {
+        if (empty($api_key)) {
             return;
         }
         
-        // Allow filtering of whether script should load
-        $should_load = apply_filters('mpet_should_load_script', true);
-        if (!$should_load) {
-            return;
-        }
-        
-        $sample_rate = get_option('mpet_sample_rate', 100);
-        $debug_mode = get_option('mpet_debug_mode', 0);
-        $ignore_patterns = get_option('mpet_ignore_errors', '');
-        
-        // Convert ignore patterns to JavaScript array
+        // Convert ignore patterns to array
         $ignore_array = array();
         if (!empty($ignore_patterns)) {
-            $patterns = explode("\n", $ignore_patterns);
-            foreach ($patterns as $pattern) {
-                $pattern = trim($pattern);
-                if (!empty($pattern)) {
-                    $ignore_array[] = $pattern;
-                }
-            }
+            $ignore_array = array_filter(array_map('trim', explode("\n", $ignore_patterns)));
+        }
+        
+        // Check if script should be loaded
+        if (!apply_filters('mpet_should_load_script', true)) {
+            return;
+        }
+        
+        // Get enhanced features settings
+        $session_replay_enabled = get_option('mpet_session_replay_enabled', true);
+        $max_events = get_option('mpet_session_replay_max_events', 1000);
+        $mouse_tracking = get_option('mpet_mouse_tracking', true);
+        $click_tracking = get_option('mpet_click_tracking', true);
+        $scroll_tracking = get_option('mpet_scroll_tracking', true);
+        $keypress_tracking = get_option('mpet_keypress_tracking', true);
+        $focus_tracking = get_option('mpet_focus_tracking', true);
+        $url_tracking = get_option('mpet_url_tracking', true);
+        
+        $performance_enabled = get_option('mpet_performance_enabled', true);
+        $memory_monitoring = get_option('mpet_memory_monitoring', true);
+        
+        $privacy_mask_input = get_option('mpet_privacy_mask_input', true);
+        $privacy_exclude_fields = get_option('mpet_privacy_exclude_fields', 'password,credit-card,ssn,passwd');
+        $user_consent = get_option('mpet_user_consent', false);
+        
+        // Convert exclude fields to array
+        $exclude_fields_array = array();
+        if (!empty($privacy_exclude_fields)) {
+            $exclude_fields_array = array_filter(array_map('trim', explode(',', $privacy_exclude_fields)));
         }
         
         // Build base configuration
@@ -296,12 +586,34 @@ class MetricPointsErrorTracking {
             'sampleRate' => floatval($sample_rate),
             'debug' => $debug_mode ? true : false,
             'ignorePatterns' => $ignore_array,
+            'sessionReplay' => array(
+                'enabled' => $session_replay_enabled ? true : false,
+                'maxEvents' => intval($max_events),
+                'mouseTracking' => $mouse_tracking ? true : false,
+                'clickTracking' => $click_tracking ? true : false,
+                'scrollTracking' => $scroll_tracking ? true : false,
+                'keypressTracking' => $keypress_tracking ? true : false,
+                'focusTracking' => $focus_tracking ? true : false,
+                'urlTracking' => $url_tracking ? true : false
+            ),
+            'performance' => array(
+                'enabled' => $performance_enabled ? true : false,
+                'captureMetrics' => $performance_enabled ? true : false,
+                'memoryMonitoring' => $memory_monitoring ? true : false
+            ),
+            'privacy' => array(
+                'maskUserInput' => $privacy_mask_input ? true : false,
+                'excludeSensitiveFields' => $exclude_fields_array,
+                'userConsent' => $user_consent ? true : false
+            ),
             'metadata' => array(
                 'wordpress_version' => get_bloginfo('version'),
                 'plugin_version' => MPET_VERSION,
                 'site_url' => get_site_url(),
                 'theme' => get_stylesheet(),
-                'user_role' => is_user_logged_in() ? 'logged_in' : 'anonymous'
+                'user_role' => is_user_logged_in() ? 'logged_in' : 'anonymous',
+                'plugin_name' => 'metric-points-error-tracking',
+                'environment' => defined('WP_DEBUG') && WP_DEBUG ? 'development' : 'production'
             )
         );
         
@@ -310,141 +622,26 @@ class MetricPointsErrorTracking {
         
         // Fire action before script output
         do_action('mpet_before_script_output', $config);
-        
         ?>
         <script type="text/javascript">
         (function() {
             // Metric Points Error Tracking Configuration
             window.MetricPointsConfig = <?php echo json_encode($config); ?>;
             
-            // Initialize error tracking
-            window.MetricPointsErrorTracker = {
-                init: function() {
-                    var self = this;
-                    
-                    // Handle JavaScript errors
-                    window.onerror = function(message, source, lineno, colno, error) {
-                        var errorData = {
-                            type: 'javascript_error',
-                            message: message,
-                            source: source,
-                            line: lineno,
-                            column: colno,
-                            stack: error ? error.stack : null,
-                            timestamp: new Date().toISOString(),
-                            url: window.location.href,
-                            userAgent: navigator.userAgent,
-                            level: 'error'
-                        };
-                        
-                        // Allow filtering of error data
-                        if (window.MetricPointsConfig.onErrorDataFilter) {
-                            errorData = window.MetricPointsConfig.onErrorDataFilter(errorData);
-                        }
-                        
-                        self.reportError(errorData);
-                        return false;
-                    };
-                    
-                    // Handle unhandled promise rejections
-                    window.addEventListener('unhandledrejection', function(event) {
-                        var errorData = {
-                            type: 'unhandled_rejection',
-                            message: event.reason ? event.reason.toString() : 'Unhandled Promise Rejection',
-                            stack: event.reason && event.reason.stack ? event.reason.stack : null,
-                            timestamp: new Date().toISOString(),
-                            url: window.location.href,
-                            userAgent: navigator.userAgent,
-                            level: 'error'
-                        };
-                        
-                        // Allow filtering of error data
-                        if (window.MetricPointsConfig.onErrorDataFilter) {
-                            errorData = window.MetricPointsConfig.onErrorDataFilter(errorData);
-                        }
-                        
-                        self.reportError(errorData);
-                    });
-                    
-                    if (window.MetricPointsConfig.debug) {
-                        console.log('Metric Points Error Tracking initialized');
-                    }
-                },
-                
-                shouldIgnoreError: function(message) {
-                    var patterns = window.MetricPointsConfig.ignorePatterns;
-                    for (var i = 0; i < patterns.length; i++) {
-                        try {
-                            var regex = new RegExp(patterns[i], 'i');
-                            if (regex.test(message)) {
-                                return true;
-                            }
-                        } catch (e) {
-                            // Invalid regex, try simple string match
-                            if (message.toLowerCase().indexOf(patterns[i].toLowerCase()) !== -1) {
-                                return true;
-                            }
-                        }
-                    }
-                    return false;
-                },
-                
-                reportError: function(errorData) {
-                    // Check sample rate
-                    if (Math.random() * 100 > window.MetricPointsConfig.sampleRate) {
-                        return;
-                    }
-                    
-                    // Check ignore patterns
-                    if (this.shouldIgnoreError(errorData.message)) {
-                        if (window.MetricPointsConfig.debug) {
-                            console.log('Ignoring error:', errorData.message);
-                        }
-                        return;
-                    }
-                    
-                    // Add metadata
-                    errorData.metadata = window.MetricPointsConfig.metadata;
-                    
-                    // Send to endpoint
-                    var xhr = new XMLHttpRequest();
-                    xhr.open('POST', window.MetricPointsConfig.endpoint + '/' + encodeURIComponent(window.MetricPointsConfig.apiKey), true);
-                    xhr.setRequestHeader('Content-Type', 'application/json');
-                    
-                    xhr.onreadystatechange = function() {
-                        if (xhr.readyState === 4) {
-                            if (window.MetricPointsConfig.debug) {
-                                if (xhr.status === 200 || xhr.status === 204) {
-                                    console.log('Error reported successfully');
-                                } else {
-                                    console.error('Failed to report error:', xhr.status);
-                                }
-                            }
-                        }
-                    };
-                    
-                    try {
-                        xhr.send(JSON.stringify(errorData));
-                    } catch (e) {
-                        if (window.MetricPointsConfig.debug) {
-                            console.error('Failed to send error report:', e);
-                        }
-                    }
-                }
+            // Load the enhanced error tracker script
+            var script = document.createElement('script');
+            script.src = '<?php echo plugin_dir_url(__FILE__); ?>js/metric-points-error-tracker.js';
+            script.async = true;
+            script.onload = function() {
+                console.log('Metric Points Error Tracker loaded successfully');
             };
-            
-            // Initialize when DOM is ready
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', function() {
-                    window.MetricPointsErrorTracker.init();
-                });
-            } else {
-                window.MetricPointsErrorTracker.init();
-            }
+            script.onerror = function() {
+                console.error('Failed to load Metric Points Error Tracker');
+            };
+            document.head.appendChild(script);
         })();
         </script>
         <?php
-        
         // Fire action after script output
         do_action('mpet_after_script_output', $config);
     }

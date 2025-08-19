@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Error Tracker Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; }
+        button { margin: 5px; padding: 10px; }
+        .error { color: red; }
+        .success { color: green; }
+        .info { color: blue; }
+    </style>
+</head>
+<body>
+    <h1>🚀 Simple Error Tracker Test</h1>
+    
+    <div class="test-section">
+        <h3>Configuration</h3>
+        <p>API Key: <input type="text" id="apiKey" value="test-key-123" size="30"></p>
+        <p>Endpoint: <input type="text" id="endpoint" value="http://localhost:8000/api/error-reports" size="50"></p>
+        <button onclick="initTracker()">Initialize Tracker</button>
+        <button onclick="showConfig()">Show Config</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>Error Testing</h3>
+        <button onclick="throwError()">Throw Error</button>
+        <button onclick="throwTypeError()">Type Error</button>
+        <button onclick="rejectPromise()">Reject Promise</button>
+        <button onclick="manualError()">Manual Track</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>Session Replay</h3>
+        <button onclick="simulateActions()">Simulate Actions</button>
+        <button onclick="showSessionData()">Show Session Data</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>Performance</h3>
+        <button onclick="measurePerformance()">Measure Performance</button>
+        <button onclick="showMetrics()">Show Metrics</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>Console</h3>
+        <button onclick="testConsole()">Test Console</button>
+        <div id="consoleOutput" style="background: #f0f0f0; padding: 10px; margin-top: 10px; font-family: monospace; font-size: 12px;"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Status</h3>
+        <div id="status">Not initialized</div>
+    </div>
+
+    <!-- Enhanced Error Tracker Script -->
+    <script src="js/metric-points-error-tracker.js"></script>
+    
+    <script>
+        let tracker = null;
+        
+        function initTracker() {
+            const apiKey = document.getElementById('apiKey').value;
+            const endpoint = document.getElementById('endpoint').value;
+            
+            if (!apiKey || !endpoint) {
+                showStatus('Please provide API key and endpoint', 'error');
+                return;
+            }
+            
+            // Set global configuration
+            window.MetricPointsConfig = {
+                apiKey: apiKey,
+                endpoint: endpoint + '/' + encodeURIComponent(apiKey),
+                sampleRate: 1.0,
+                debug: true,
+                sessionReplay: {
+                    enabled: true,
+                    maxEvents: 1000,
+                    mouseTracking: true,
+                    clickTracking: true,
+                    scrollTracking: true,
+                    keypressTracking: true,
+                    focusTracking: true,
+                    urlTracking: true
+                },
+                performance: {
+                    enabled: true,
+                    captureMetrics: true,
+                    memoryMonitoring: true
+                },
+                privacy: {
+                    maskUserInput: true,
+                    excludeSensitiveFields: ['password', 'credit-card', 'ssn'],
+                    userConsent: true
+                },
+                metadata: {
+                    testPage: true,
+                    version: '2.0.0',
+                    environment: 'development'
+                }
+            };
+            
+            // Wait for tracker to initialize
+            setTimeout(() => {
+                if (window.MetricPointsTracker) {
+                    tracker = window.MetricPointsTracker;
+                    showStatus('Tracker initialized successfully!', 'success');
+                } else {
+                    showStatus('Failed to initialize tracker', 'error');
+                }
+            }, 1000);
+        }
+        
+        function showConfig() {
+            if (window.MetricPointsConfig) {
+                alert('Current Configuration:\n' + JSON.stringify(window.MetricPointsConfig, null, 2));
+            } else {
+                alert('No configuration set');
+            }
+        }
+        
+        function throwError() {
+            throw new Error('Test error thrown at ' + new Date().toISOString());
+        }
+        
+        function throwTypeError() {
+            const obj = null;
+            obj.nonExistentMethod();
+        }
+        
+        function rejectPromise() {
+            Promise.reject(new Error('Test promise rejection'));
+        }
+        
+        function manualError() {
+            if (tracker) {
+                tracker.trackError(new Error('Manually tracked error'), {
+                    source: 'simple-test-page',
+                    category: 'manual-testing'
+                });
+                showStatus('Error tracked manually', 'success');
+            } else {
+                showStatus('Tracker not initialized', 'error');
+            }
+        }
+        
+        function simulateActions() {
+            // Simulate mouse movements
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    const event = new MouseEvent('mousemove', {
+                        clientX: Math.random() * window.innerWidth,
+                        clientY: Math.random() * window.innerHeight
+                    });
+                    document.dispatchEvent(event);
+                }, i * 100);
+            }
+            
+            // Simulate click
+            setTimeout(() => {
+                const event = new MouseEvent('click', {
+                    clientX: 100,
+                    clientY: 100
+                });
+                document.dispatchEvent(event);
+            }, 600);
+            
+            showStatus('User actions simulated', 'success');
+        }
+        
+        function showSessionData() {
+            if (tracker) {
+                const data = tracker.getSessionData();
+                const newWindow = window.open('', '_blank');
+                newWindow.document.write(`
+                    <html>
+                        <head><title>Session Data</title></head>
+                        <body>
+                            <h1>Session Data</h1>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </body>
+                    </html>
+                `);
+            } else {
+                showStatus('Tracker not initialized', 'error');
+            }
+        }
+        
+        function measurePerformance() {
+            if (window.performance && window.performance.timing) {
+                const timing = window.performance.timing;
+                const navigationStart = timing.navigationStart;
+                
+                const metrics = {
+                    pageLoadTime: timing.loadEventEnd - navigationStart,
+                    domContentLoaded: timing.domContentLoadedEventEnd - navigationStart,
+                    timeToFirstByte: timing.responseStart - navigationStart
+                };
+                
+                showStatus('Performance metrics captured: ' + JSON.stringify(metrics), 'success');
+            } else {
+                showStatus('Performance API not available', 'info');
+            }
+        }
+        
+        function showMetrics() {
+            if (tracker) {
+                const metrics = tracker.getPerformanceMetrics();
+                alert('Performance Metrics:\n' + JSON.stringify(metrics, null, 2));
+            } else {
+                showStatus('Tracker not initialized', 'error');
+            }
+        }
+        
+        function testConsole() {
+            console.log('Test log message');
+            console.warn('Test warning message');
+            console.error('Test error message');
+            console.info('Test info message');
+            
+            addConsoleLine('log', 'Test log message sent');
+            addConsoleLine('warn', 'Test warning message sent');
+            addConsoleLine('error', 'Test error message sent');
+            addConsoleLine('info', 'Test info message sent');
+            
+            showStatus('Console logs tested', 'success');
+        }
+        
+        function addConsoleLine(level, message) {
+            const consoleOutput = document.getElementById('consoleOutput');
+            const line = document.createElement('div');
+            line.className = level;
+            line.textContent = `[${level.toUpperCase()}] ${message}`;
+            consoleOutput.appendChild(line);
+        }
+        
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.className = type;
+        }
+        
+        // Error event listeners
+        window.addEventListener('error', function(e) {
+            addConsoleLine('error', `Error captured: ${e.message}`);
+        });
+        
+        window.addEventListener('unhandledrejection', function(e) {
+            addConsoleLine('error', `Promise rejection captured: ${e.reason}`);
+        });
+        
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            showStatus('Page loaded, ready to initialize tracker', 'info');
+        });
+    </script>
+</body>
+</html>
